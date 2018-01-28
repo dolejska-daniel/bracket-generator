@@ -33,6 +33,7 @@ class Bracket
 		BLOCK_TYPE_MATCH_FOOT = 'match:foot';
 
 	const
+		SET_ATTRS                    = 'SET_ATTRS',
 		SET_BORDER_TOP_CLASS         = 'SET_BORDER_TOP_CLASS',
 		SET_BORDER_RIGHT_CLASS       = 'SET_BORDER_RIGHT_CLASS',
 		SET_BORDER_BOTTOM_CLASS      = 'SET_BORDER_BOTTOM_CLASS',
@@ -50,6 +51,8 @@ class Bracket
 
 	/** @var array $settings */
 	protected $settings = [
+		self::SET_ATTRS => [ 'class' => 'bracket' ],
+
 		self::SET_BORDER_TOP_CLASS    => 'border-top',
 		self::SET_BORDER_RIGHT_CLASS  => 'border-right',
 		self::SET_BORDER_BOTTOM_CLASS => 'border-bottom',
@@ -263,6 +266,8 @@ class Bracket
 	{
 		//  Creating table & table body - containers
 		$this->html = $table = Html::el('table');
+		$table->addAttributes($this->settings[self::SET_ATTRS]);
+
 		$tbody = Html::el('tbody');
 		$table->addHtml($tbody);
 
