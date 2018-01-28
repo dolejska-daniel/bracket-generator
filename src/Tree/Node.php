@@ -22,8 +22,8 @@ namespace BracketGenerator\Tree;
 
 class Node
 {
-	/** @var int $id */
-	public $id;
+	/** @var int $node_id */
+	public $node_id;
 
 	/** @var string $name1 */
 	public $name1;
@@ -37,11 +37,16 @@ class Node
 	/** @var int $score1 */
 	public $score2;
 
+	/** @var $data */
+	public $data;
+
+
 	/** @var string $seed1 */
 	protected $seed1;
 
 	/** @var string $seed2 */
 	protected $seed2;
+
 
 	/** @var Node $rightNode */
 	public $rightNode;
@@ -49,47 +54,38 @@ class Node
 	/** @var Node $leftNode */
 	public $leftNode;
 
+
 	public function __construct( string $seed1 = null, string $seed2 = null )
 	{
 		$this->seed1 = $seed1;
 		$this->seed2 = $seed2;
 
-		$this->rightNode = $this->isEmpty() ? null : new Node();
-		$this->leftNode  = $this->isEmpty() ? null : new Node();
+		$this->rightNode = null;
+		$this->leftNode  = null;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSeed1(): string
+	public function __get( $name )
 	{
-		return $this->seed1;
+		return is_object($this->data) ? $this->data->$name : $this->data[$name];
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSeed2(): string
-	{
-		return $this->seed2;
-	}
 
 	/**
 	 * @return int
 	 */
-	public function getId(): int
+	public function getNodeId(): int
 	{
-		return $this->id;
+		return $this->node_id;
 	}
 
 	/**
-	 * @param int $id
+	 * @param int $node_id
 	 *
 	 * @return Node
 	 */
-	public function setId( int $id ): self
+	public function setNodeId( int $node_id ): self
 	{
-		$this->id = $id;
+		$this->node_id = $node_id;
 		return $this;
 	}
 
@@ -126,6 +122,22 @@ class Node
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getSeed1(): string
+	{
+		return $this->seed1;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSeed2(): string
+	{
+		return $this->seed2;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function isEmpty(): bool
@@ -150,6 +162,8 @@ class Node
 	}
 
 	/**
+	 * Returns tree height - number of levels.
+	 *
 	 * @return int
 	 */
 	public function getHeight(): int
@@ -160,6 +174,11 @@ class Node
 		return max($this->leftNode ? $this->leftNode->getHeight() : 0,  $this->rightNode ? $this->rightNode->getHeight() : 0) + 1;
 	}
 
+	/**
+	 * Returns participant count in the tree.
+	 *
+	 * @return int
+	 */
 	public function getParticipantCount(): int
 	{
 		if ($this->isEmpty())
@@ -170,6 +189,11 @@ class Node
 			+ ($this->rightNode && $this->rightNode->isEmpty() == false ? $this->rightNode->getParticipantCount() : 1);
 	}
 
+	/**
+	 * Returns match count in the tree.
+	 *
+	 * @return int
+	 */
 	public function getMatchCount(): int
 	{
 		if ($this->isEmpty())

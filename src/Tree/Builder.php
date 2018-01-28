@@ -38,7 +38,9 @@ class Builder
 	public static function buildTree( int $size ): Node
 	{
 		$node = new Node(1, 2);
-		return self::createSubnodes($node, $size - 2, 1);
+		self::createSubnodes($node, $size - 2, 1);
+		self::normalizeSubtree($node, $node->getHeight() - 1);
+		return $node;
 	}
 
 	/**
@@ -88,6 +90,71 @@ class Builder
 
 
 	// ==============================================d=d=
+	//   TREE FROM LIST BUILDING
+	// ==============================================d=d=
+
+	/**
+	 * @param $rootList
+	 * @param $l
+	 * @param $r
+	 *
+	 * @return Node
+	 */
+	public static function buildTreeFromListTree( $rootList, $l, $r ): Node
+	{
+		$node = new Node(1, 1);
+		$node->data = $rootList;
+
+		self::createSubnodeFromTree($node, self::SIDE_RIGHT, @$rootList[$r], $l, $r);
+		self::createSubnodeFromTree($node, self::SIDE_LEFT, @$rootList[$l], $l, $r);
+		self::normalizeTree($node);
+
+		return $node;
+	}
+
+	/**
+	 * @param Node $node
+	 * @param      $side
+	 * @param      $list
+	 * @param      $l
+	 * @param      $r
+	 */
+	protected static function createSubnodeFromTree( Node $node, $side, $list, $l, $r )
+	{
+		if ($list == false)
+			return;
+
+		$node->$side = $newNode = new Node(1, 1);
+		$newNode->data = $list;
+
+		self::createSubnodeFromTree($newNode, self::SIDE_RIGHT, @$list[$r], $l, $r);
+		self::createSubnodeFromTree($newNode, self::SIDE_LEFT, @$list[$l], $l, $r);
+	}
+
+	protected static function normalizeTree( Node $rootNode )
+	{
+		$height = $rootNode->getHeight();
+		self::normalizeSubtree($rootNode, $height - 1);
+	}
+
+	protected static function normalizeSubtree( Node $node, $current_level )
+	{
+		if ($current_level)
+		{
+			if ($node->rightNode == null)
+				$node->rightNode = new Node();
+
+			self::normalizeSubtree($node->rightNode, $current_level - 1);
+
+			if ($node->leftNode == null)
+				$node->leftNode = new Node();
+
+			self::normalizeSubtree($node->leftNode, $current_level - 1);
+		}
+	}
+
+
+	// ==============================================d=d=
 	//   LEVEL BUILDING
 	// ==============================================d=d=
 
@@ -116,7 +183,7 @@ class Builder
 		if ($current_level < 0)
 			return [];
 
-		$levels[$current_level][] = &$node;
+		$levels[$current_level][] = $node;
 
 		if ($node->leftNode)
 			self::fillSublevels($node->leftNode, $levels, $current_level - 1);

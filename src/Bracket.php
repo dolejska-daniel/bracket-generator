@@ -115,6 +115,11 @@ class Bracket
 		return $this->map;
 	}
 
+
+	// ==============================================d=d=
+	//   INIT FUNCTIONS
+	// ==============================================d=d=
+
 	public static function create( int $participant_count, array $settings = [] ): self
 	{
 		$bracket = new static;
@@ -136,6 +141,39 @@ class Bracket
 		$bracket->levels = Tree\Builder::buildLevels($bracket->tree);
 		return $bracket;
 	}
+
+	public static function createFromList( array $list, $l, $r, array $settings = [] )
+	{
+		$list = self::createMatchTreeFromList($list, $l, $r);
+
+		$bracket = new static;
+		$bracket->tree   = Tree\Builder::buildTreeFromListTree($list, $l, $r);
+		$bracket->levels = Tree\Builder::buildLevels($bracket->tree);
+
+		$bracket->settings          = array_merge($bracket->settings, $settings);
+		$bracket->participant_count = pow(2, $bracket->tree->getHeight() - 1);
+		return $bracket;
+	}
+
+	public static function createFromListAndFill( array $list, $n1, $s1, $l, $n2, $s2, $r, array $settings = [] )
+	{
+		$list = self::createMatchTreeFromList($list, $l, $r);
+
+		$bracket = new static;
+		$bracket->tree   = Tree\Builder::buildTreeFromListTree($list, $l, $r);
+		$bracket->levels = Tree\Builder::buildLevels($bracket->tree);
+
+		$bracket->settings          = array_merge($bracket->settings, $settings);
+		$bracket->participant_count = pow(2, $bracket->tree->getHeight() - 1);
+
+		$bracket->fillByMatchTree($list, $n1, $s1, $l, $n2, $s2, $r);
+		return $bracket;
+	}
+
+
+	// ==============================================d=d=
+	//   BUILD FUNCTIONS
+	// ==============================================d=d=
 
 	protected function buildMap( int $count = null, $spacing = 0, $match_id = null, $current_level = 0 )
 	{
@@ -185,7 +223,7 @@ class Bracket
 			}
 			else
 			{
-				$match_node->setId($match_id = $this->getNextMatchId($match_id));
+				$match_node->setNodeId($match_id = $this->getNextMatchId($match_id));
 
 				$x++;
 				$this->map[$x][$current_level] = ArrayHash::from([
@@ -304,6 +342,11 @@ class Bracket
 		}
 	}
 
+
+	// ==============================================d=d=
+	//   BUILD HELP FUNCTIONS
+	// ==============================================d=d=
+
 	protected function getNextMatchId( $current_match_id = null )
 	{
 		return $current_match_id + 1;
@@ -312,7 +355,7 @@ class Bracket
 	protected function getMatchIdElement( Tree\Node $node ): Html
 	{
 		$el = Html::el($this->settings[self::SET_MATCH_ID_ELEMENT], $this->settings[self::SET_MATCH_ID_ATTRS]);
-		$el->setText($node->getId());
+		$el->setText($node->getNodeId());
 		return $el;
 	}
 
@@ -344,15 +387,20 @@ class Bracket
 		return $el;
 	}
 
-	public function fillByParticipantList( array $participants, $name_property = 0, $score_property = 1 )
+
+	// ==============================================d=d=
+	//   BRACKET FILLING FUNCTIONS
+	// ==============================================d=d=
+
+	public function fillByParticipantList( array $participants, $n = 0, $s = 1 )
 	{
 		if (count($participants) != $this->participant_count)
 			throw new \Exception('Count of provided participants does not match with bracket size.');
 
-		$this->fillByParticipantListRecursive(0, [], $participants, $name_property, $score_property);
+		$this->fillByParticipantListRecursive(0, [], $participants, $n, $s);
 	}
 
-	public function fillByParticipantListRecursive( int $current_level, array $seeds_set, array $participants, $name_property = 0, $score_property = 1 )
+	protected function fillByParticipantListRecursive( int $current_level, array $seeds_set, array $participants, $n = 0, $s = 1 )
 	{
 		$level_nodes = @$this->getLevels()[$current_level];
 		if ($level_nodes == false)
@@ -366,28 +414,60 @@ class Bracket
 			if (isset($seeds_set[$node->getSeed1()]) == false)
 			{
 				$p1 = $participants[$node->getSeed1() - 1];
-				$node->name1  = $p1[$name_property];
-				$node->score1 = $p1[$score_property];
+				$node->name1  = $p1[$n];
+				$node->score1 = $p1[$s];
+				$node->data   = $p1;
+
 				$seeds_set[$node->getSeed1()] = true;
 			}
 
 			if (isset($seeds_set[$node->getSeed2()]) == false)
 			{
 				$p2 = $participants[$node->getSeed2() - 1];
-				$node->name2  = $p2[$name_property];
-				$node->score2 = $p2[$score_property];
+				$node->name2  = $p2[$n];
+				$node->score2 = $p2[$s];
+				$node->data   = $p2;
+
 				$seeds_set[$node->getSeed2()] = true;
 			}
 		}
-		$this->fillByParticipantListRecursive($current_level + 1, $seeds_set, $participants, $name_property, $score_property);
+		$this->fillByParticipantListRecursive($current_level + 1, $seeds_set, $participants, $n, $s);
 	}
 
-	public function fillByMatchList( array $matches, $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property )
+	public function fillByMatchList( array $matches, $n1, $s1, $l, $n2, $s2, $r )
 	{
-		$tree = $this->createMatchTreeFromList($matches, $leftSubtree_property, $rightSubtree_property);
-		print_r($tree);
-		$this->fillByMatchTree(reset($tree), $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property);
+		$tree = $this->createMatchTreeFromList($matches, $l, $r);
+		$this->fillByMatchTree(reset($tree), $n1, $s1, $l, $n2, $s2, $r);
 	}
+
+	public function fillByMatchTree( $root_match, $n1, $s1, $l, $n2, $s2, $r )
+	{
+		$this->fillByMatchTreeRecursive($this->tree, $root_match, $n1, $s1, $l, $n2, $s2, $r );
+	}
+
+	protected function fillByMatchTreeRecursive( Tree\Node &$root_node = null, $root_match, $n1, $s1, $l, $n2, $s2, $r )
+	{
+		if ($root_match == false || $root_node->isEmpty())
+			return;
+
+		$is_object = is_object($root_match);
+
+		$root_node->name1  = $is_object ? $root_match->$n1 : $root_match[$n1];
+		$root_node->score1 = $is_object ? $root_match->$s1 : $root_match[$s1];
+
+		$root_node->name2  = $is_object ? $root_match->$n2 : $root_match[$n2];
+		$root_node->score2 = $is_object ? $root_match->$s2 : $root_match[$s2];
+
+		$root_node->data = $root_match;
+
+		$this->fillByMatchTreeRecursive($root_node->rightNode, $is_object ? $root_match->$r : $root_match[$r], $n1, $s1, $l, $n2, $s2, $r);
+		$this->fillByMatchTreeRecursive($root_node->leftNode, $is_object ? $root_match->$l : $root_match[$l], $n1, $s1, $l, $n2, $s2, $r);
+	}
+
+
+	// ==============================================d=d=
+	//   OTHER HELP FUNCTIONS
+	// ==============================================d=d=
 
 	protected static function createMatchTreeFromList( array $match_list, $l, $r)
 	{
@@ -426,27 +506,7 @@ class Bracket
 		foreach ($refd as $id)
 			unset($tree[$id]);
 
-		return $tree;
-	}
-
-	public function fillByMatchTree( $root_match, $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property )
-	{
-		$this->fillByMatchTreeRecursive($this->tree, $root_match, $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property, is_object($root_match) );
-	}
-
-	protected function fillByMatchTreeRecursive( Tree\Node &$root_node = null, $root_match, $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property, $is_object )
-	{
-		if ($root_match == false || $root_node->isEmpty())
-			return;
-
-		$root_node->name1  = $is_object ? $root_match->$name1_property  : $root_match[$name1_property];
-		$root_node->score1 = $is_object ? $root_match->$score1_property : $root_match[$score1_property];
-
-		$root_node->name2  = $is_object ? $root_match->$name2_property  : $root_match[$name2_property];
-		$root_node->score2 = $is_object ? $root_match->$score2_property : $root_match[$score2_property];
-
-		$this->fillByMatchTreeRecursive($root_node->rightNode, $is_object ? $root_match->$rightSubtree_property : $root_match[$rightSubtree_property], $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property, $is_object);
-		$this->fillByMatchTreeRecursive($root_node->leftNode, $is_object ? $root_match->$leftSubtree_property : $root_match[$leftSubtree_property], $name1_property, $score1_property, $leftSubtree_property, $name2_property, $score2_property, $rightSubtree_property, $is_object);
+		return reset($tree);
 	}
 
 	public function __toString(): string
