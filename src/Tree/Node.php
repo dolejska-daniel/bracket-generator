@@ -41,10 +41,10 @@ class Node
 	public $data;
 
 
-	/** @var string $seed1 */
+	/** @var $seed1 */
 	protected $seed1;
 
-	/** @var string $seed2 */
+	/** @var $seed2 */
 	protected $seed2;
 
 
@@ -55,7 +55,7 @@ class Node
 	public $leftNode;
 
 
-	public function __construct( string $seed1 = null, string $seed2 = null )
+	public function __construct( $seed1 = null, $seed2 = null )
 	{
 		$this->seed1 = $seed1;
 		$this->seed2 = $seed2;

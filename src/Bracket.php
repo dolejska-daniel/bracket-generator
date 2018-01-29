@@ -154,7 +154,7 @@ class Bracket
 		$bracket->levels = Tree\Builder::buildLevels($bracket->tree);
 
 		$bracket->settings          = array_merge($bracket->settings, $settings);
-		$bracket->participant_count = pow(2, $bracket->tree->getHeight() - 1);
+		$bracket->participant_count = $bracket->tree->getParticipantCount();
 		return $bracket;
 	}
 
@@ -167,7 +167,7 @@ class Bracket
 		$bracket->levels = Tree\Builder::buildLevels($bracket->tree);
 
 		$bracket->settings          = array_merge($bracket->settings, $settings);
-		$bracket->participant_count = pow(2, $bracket->tree->getHeight() - 1);
+		$bracket->participant_count = $bracket->tree->getParticipantCount();
 
 		$bracket->fillByMatchTree($list, $n1, $s1, $l, $n2, $s2, $r);
 		return $bracket;
