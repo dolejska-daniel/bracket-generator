@@ -120,4 +120,19 @@ class BuilderTest extends TestCase
 		$this->assertSameSize($expectedLevels, $levels);
 		$this->assertSame($expectedLevels, $levels);
 	}
+
+	public function testLevelNormalization()
+	{
+		$this->markTestIncomplete('This test has not been implemented yet.');
+	}
+
+	public function testTreeFromListTree()
+	{
+		$this->markTestIncomplete('This test has not been implemented yet.');
+	}
+
+	public function testTree()
+	{
+		$this->markTestIncomplete('This test has not been implemented yet.');
+	}
 }
