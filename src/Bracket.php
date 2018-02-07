@@ -303,9 +303,9 @@ class Bracket
 						'rowspan' => 2,
 					])->addHtml($id));
 
-					$tr->addHtml(Html::el('td')->addHtml($name));
+					$tr->addHtml(Html::el('td', [ 'style' => 'vertical-align: bottom;' ])->addHtml($name));
 
-					$tr->addHtml(Html::el('td')->addHtml($score));
+					$tr->addHtml(Html::el('td', [ 'style' => 'vertical-align: bottom;' ])->addHtml($score));
 
 					$tr->addHtml(Html::el('td', [
 						'class' => 'match-space-after',
@@ -328,9 +328,9 @@ class Bracket
 						'class' => $block['hasPreBorder'] ? $this->settings[self::SET_BORDER_TOP_CLASS] : '',
 					]));
 
-					$tr->addHtml(Html::el('td')->addHtml($name));
+					$tr->addHtml(Html::el('td', [ 'style' => 'vertical-align: top;' ])->addHtml($name));
 
-					$tr->addHtml(Html::el('td')->addHtml($score));
+					$tr->addHtml(Html::el('td', [ 'style' => 'vertical-align: top;' ])->addHtml($score));
 
 					$tr->addHtml(Html::el('td', [
 						'class' => 'match-space',
