@@ -33,6 +33,16 @@ class Bracket
 		BLOCK_TYPE_MATCH_FOOT = 'match:foot';
 
 	const
+		CLASS_WRAPPER  = 'bracket',
+		CLASS_ID       = 'match-id',
+		CLASS_NAME     = 'match-name',
+		CLASS_SCORE    = 'match-score',
+		CLASS_WON      = 'match-won',
+		CLASS_LOST     = 'match-lost',
+		CLASS_HEAD_ROW = 'match-head',
+		CLASS_FOOT_ROW = 'match-foot';
+
+	const
 		SET_ATTRS                    = 'SET_ATTRS',
 		SET_BORDER_TOP_CLASS         = 'SET_BORDER_TOP_CLASS',
 		SET_BORDER_RIGHT_CLASS       = 'SET_BORDER_RIGHT_CLASS',
@@ -51,24 +61,24 @@ class Bracket
 
 	/** @var array $settings */
 	protected $settings = [
-		self::SET_ATTRS => [ 'class' => 'bracket' ],
+		self::SET_ATTRS => [ 'class' => [ self::CLASS_WRAPPER ] ],
 
 		self::SET_BORDER_TOP_CLASS    => 'border-top',
 		self::SET_BORDER_RIGHT_CLASS  => 'border-right',
 		self::SET_BORDER_BOTTOM_CLASS => 'border-bottom',
 
 		self::SET_MATCH_ID_ELEMENT => 'div',
-		self::SET_MATCH_ID_ATTRS   => [ 'class' => 'match-id' ],
+		self::SET_MATCH_ID_ATTRS   => [ 'class' => [ self::CLASS_ID ] ],
 
 		self::SET_MATCH_HEAD_NAME_ELEMENT  => 'div',
-		self::SET_MATCH_HEAD_NAME_ATTRS    => [ 'class' => 'match-name-head' ],
+		self::SET_MATCH_HEAD_NAME_ATTRS    => [ 'class' => [ self::CLASS_NAME, self::CLASS_HEAD_ROW ] ],
 		self::SET_MATCH_HEAD_SCORE_ELEMENT => 'div',
-		self::SET_MATCH_HEAD_SCORE_ATTRS   => [ 'class' => 'match-score-head' ],
+		self::SET_MATCH_HEAD_SCORE_ATTRS   => [ 'class' => [ self::CLASS_SCORE, self::CLASS_HEAD_ROW ] ],
 
 		self::SET_MATCH_FOOT_NAME_ELEMENT  => 'div',
-		self::SET_MATCH_FOOT_NAME_ATTRS    => [ 'class' => 'match-name-foot' ],
+		self::SET_MATCH_FOOT_NAME_ATTRS    => [ 'class' => [ self::CLASS_NAME, self::CLASS_FOOT_ROW ] ],
 		self::SET_MATCH_FOOT_SCORE_ELEMENT => 'div',
-		self::SET_MATCH_FOOT_SCORE_ATTRS   => [ 'class' => 'match-score-foot' ],
+		self::SET_MATCH_FOOT_SCORE_ATTRS   => [ 'class' => [ self::CLASS_SCORE, self::CLASS_FOOT_ROW ] ],
 	];
 
 	/** @var array $map */
