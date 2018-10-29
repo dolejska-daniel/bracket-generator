@@ -1,0 +1,50 @@
+table.bracket {
+	border-spacing: 0;
+}
+table.bracket td,
+table.bracket th {
+	padding: 0 !important;
+}
+.bracket .border-top {
+	border-top: 1px solid #1b1e21;
+}
+.bracket .border-bottom {
+	border-bottom: 1px solid #1b1e21;
+}
+.bracket .border-right {
+	border-right: 1px solid #1b1e21;
+}
+.bracket .border-left {
+	border-left: 1px solid #1b1e21;
+}
+
+.bracket .border-top,
+.bracket .border-bottom {
+	width: 10px;
+}
+.match-space {
+	width: 10px;
+}
+.match-id {
+	padding: 4px 8px;
+}
+.match-name {
+	padding: 4px 8px;
+	min-width: 180px;
+	min-height: 16px;
+	font-size: 14px;
+}
+.match-score {
+	min-height: 16px;
+	padding: 4px 8px;
+	font-size: 14px;
+}
+.match-name.match-head,
+.match-score.match-head {
+	margin-top: 0.25rem;
+}
+.match-name.match-foot,
+.match-score.match-foot {
+	border-top: 1px dashed #1b1e21;
+	margin-bottom: 0.25rem;
+}
